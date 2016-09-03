@@ -356,6 +356,7 @@ public class RNG extends Application {
 			historyList.setItems(newHistItems(historyNums));
 			genNumber.setText(String.valueOf(num));
 			if (historyNums.size() == max - min + 1) {
+				genButton.setDisable(true);
 				popUp("Complete", "No more numbers to generate", null);
 			} else {
 				genButton.setDisable(false);
