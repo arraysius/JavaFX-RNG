@@ -1,18 +1,13 @@
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -25,14 +20,10 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Random;
 
 public class RNG extends Application {
-
 	private static int min;
 	private static int max;
 	private static boolean repeat;
@@ -51,10 +42,18 @@ public class RNG extends Application {
 		settingMenu();
 	}
 
+	private String getProgramIcon() {
+		return String.valueOf(getClass().getResource("/Resource/rng_icon.png"));
+	}
+
+	private String getSoundEfect() {
+		return String.valueOf(getClass().getResource("/Resource/ticking.mp3"));
+	}
+
 	private void popUp(String title, String message, String link) {
 		final Stage popUpStage = new Stage();
 		popUpStage.setTitle(title);
-		popUpStage.getIcons().add(new Image("file:rng_icon.png"));
+		popUpStage.getIcons().add(new Image(getProgramIcon()));
 		popUpStage.initModality(Modality.APPLICATION_MODAL);
 		double width = 350;
 		double height = 200;
@@ -62,23 +61,13 @@ public class RNG extends Application {
 		Label text = new Label(message);
 		text.setFont(new Font(20));
 		Button okButton = new Button("OK");
-		okButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent actionEvent) {
-				popUpStage.close();
-			}
-		});
+		okButton.setOnAction(actionEvent -> popUpStage.close());
 
 		VBox layout = new VBox(20);
 		layout.getChildren().add(text);
 		if (link != null) {
 			final Hyperlink github = new Hyperlink(link);
-			github.setOnAction(new EventHandler<ActionEvent>() {
-				@Override
-				public void handle(ActionEvent actionEvent) {
-					getHostServices().showDocument(github.getText());
-				}
-			});
+			github.setOnAction(actionEvent -> getHostServices().showDocument(github.getText()));
 			layout.getChildren().add(github);
 		}
 		layout.getChildren().add(okButton);
@@ -94,7 +83,7 @@ public class RNG extends Application {
 	private void settingMenu() {
 		final Stage settingsStage = new Stage();
 		settingsStage.setTitle("Random Number Generator");
-		settingsStage.getIcons().add(new Image("file:rng_icon.png"));
+		settingsStage.getIcons().add(new Image(getProgramIcon()));
 
 		/* Settings layout */
 
@@ -111,20 +100,17 @@ public class RNG extends Application {
 		GridPane.setConstraints(minLabel, 0, 0);
 
 		GridPane.setConstraints(minValue, 1, 0);
-		minValue.textProperty().addListener(new ChangeListener<String>() {
-			@Override
-			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				if (!newValue.matches("\\d*"))
-					minValue.setText(newValue.replaceAll("[^\\d]", ""));
+		minValue.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (!newValue.matches("\\d*"))
+				minValue.setText(newValue.replaceAll("[^\\d]", ""));
 
-				String minText = minValue.getText();
-				if (minText.length() > 1 && minText.charAt(0) == '0')
-					minValue.setText(minText.substring(1));
+			String minText = minValue.getText();
+			if (minText.length() > 1 && minText.charAt(0) == '0')
+				minValue.setText(minText.substring(1));
 
-				if (!minText.isEmpty() && Integer.parseInt(minText) >= 100_000_000) {
-					minValue.setText("99999999");
-					maxValue.setText("100000000");
-				}
+			if (!minText.isEmpty() && Integer.parseInt(minText) >= 100_000_000) {
+				minValue.setText("99999999");
+				maxValue.setText("100000000");
 			}
 		});
 
@@ -132,26 +118,23 @@ public class RNG extends Application {
 		GridPane.setConstraints(maxLabel, 0, 1);
 
 		GridPane.setConstraints(maxValue, 1, 1);
-		maxValue.textProperty().addListener(new ChangeListener<String>() {
-			@Override
-			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				if (!newValue.matches("\\d*")) {
-					maxValue.setText(newValue.replaceAll("[^\\d]", ""));
-				}
-
-				String maxText = maxValue.getText();
-				if (maxText.equals("0")) {
-					minValue.setText("0");
-					maxValue.setText("1");
-				}
-
-				if (maxText.length() > 1 && maxText.charAt(0) == '0') {
-					maxValue.setText(maxText.substring(1));
-				}
-
-				if (!maxText.isEmpty() && Integer.parseInt(maxText) > 100_000_000)
-					maxValue.setText("100000000");
+		maxValue.textProperty().addListener((observable, oldValue, newValue) -> {
+			if (!newValue.matches("\\d*")) {
+				maxValue.setText(newValue.replaceAll("[^\\d]", ""));
 			}
+
+			String maxText = maxValue.getText();
+			if (maxText.equals("0")) {
+				minValue.setText("0");
+				maxValue.setText("1");
+			}
+
+			if (maxText.length() > 1 && maxText.charAt(0) == '0') {
+				maxValue.setText(maxText.substring(1));
+			}
+
+			if (!maxText.isEmpty() && Integer.parseInt(maxText) > 100_000_000)
+				maxValue.setText("100000000");
 		});
 
 		minMaxGrid.getChildren().addAll(minLabel, minValue, maxLabel, maxValue);
@@ -166,12 +149,9 @@ public class RNG extends Application {
 		GridPane.setConstraints(repeatCheckbox, 0, 2);
 
 		Label repeatLabel = new Label("Repeat Values");
-		repeatLabel.setOnMouseClicked(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent mouseEvent) {
-				repeatCheckbox.requestFocus();
-				repeatCheckbox.setSelected(!repeatCheckbox.isSelected());
-			}
+		repeatLabel.setOnMouseClicked(mouseEvent -> {
+			repeatCheckbox.requestFocus();
+			repeatCheckbox.setSelected(!repeatCheckbox.isSelected());
 		});
 		GridPane.setConstraints(repeatLabel, 1, 2);
 
@@ -179,12 +159,9 @@ public class RNG extends Application {
 		GridPane.setConstraints(animSoundCheckbox, 0, 3);
 
 		Label animSoundLabel = new Label("Animation & Sound");
-		animSoundLabel.setOnMouseClicked(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent mouseEvent) {
-				animSoundCheckbox.requestFocus();
-				animSoundCheckbox.setSelected(!animSoundCheckbox.isSelected());
-			}
+		animSoundLabel.setOnMouseClicked(mouseEvent -> {
+			animSoundCheckbox.requestFocus();
+			animSoundCheckbox.setSelected(!animSoundCheckbox.isSelected());
 		});
 		animSoundCheckbox.setSelected(true);
 		GridPane.setConstraints(animSoundLabel, 1, 3);
@@ -194,22 +171,19 @@ public class RNG extends Application {
 		// Continue nextButton
 		Button nextButton = new Button("Next");
 		nextButton.setAlignment(Pos.CENTER);
-		nextButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent actionEvent) {
-				// Validate inputs
-				String minText = minValue.getText();
-				String maxText = maxValue.getText();
-				if (!minText.isEmpty() && !maxText.isEmpty() && Integer.parseInt(minText) < Integer.parseInt(maxText)) {
-					min = Integer.parseInt(minText);
-					max = Integer.parseInt(maxText);
-					repeat = repeatCheckbox.isSelected();
-					animSound = animSoundCheckbox.isSelected();
-					settingsStage.close();
-					generatorWindow();
-				} else {
-					popUp("Error", "Invalid input values!", null);
-				}
+		nextButton.setOnAction(actionEvent -> {
+			// Validate inputs
+			String minText = minValue.getText();
+			String maxText = maxValue.getText();
+			if (!minText.isEmpty() && !maxText.isEmpty() && Integer.parseInt(minText) < Integer.parseInt(maxText)) {
+				min = Integer.parseInt(minText);
+				max = Integer.parseInt(maxText);
+				repeat = repeatCheckbox.isSelected();
+				animSound = animSoundCheckbox.isSelected();
+				settingsStage.close();
+				generatorWindow();
+			} else {
+				popUp("Error", "Invalid input values!", null);
 			}
 		});
 
@@ -231,11 +205,7 @@ public class RNG extends Application {
 		genStage.setMinWidth(minWidth);
 		genStage.setMinHeight(minHeight);
 		genStage.setTitle("Random Number Generator");
-		try {
-			genStage.getIcons().add(new Image(new FileInputStream("rng_icon.png")));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+		genStage.getIcons().add(new Image(getProgramIcon()));
 
 		historyList = new ListView<>();
 		historyList.setFocusTraversable(false);
@@ -245,41 +215,30 @@ public class RNG extends Application {
 		genNumber.setFont(new Font(250));
 		genButton = new Button("Generate");
 		genButton.setFont(new Font(35));
-		genButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent actionEvent) {
-				if (animSound) {
-					// Sound
-					Media sound = new Media(new File("ticking.mp3").toURI().toString());
-					MediaPlayer mediaPlayer = new MediaPlayer(sound);
-					mediaPlayer.play();
+		genButton.setOnAction(actionEvent -> {
+			if (animSound) {
+				// Sound
+				Media sound = new Media(getSoundEfect());
+				MediaPlayer mediaPlayer = new MediaPlayer(sound);
+				mediaPlayer.play();
 
-					// Animation
-					genButton.setDisable(true);
-					int seconds = 2;
-					int animGens = 20;
-					Timeline animationTimeline = new Timeline(new KeyFrame(
-							Duration.millis(1000 / animGens),
-							new EventHandler<ActionEvent>() {
-								@Override
-								public void handle(ActionEvent actionEvent) {
-									genNumber.setText(String.valueOf(genRandomNumber(min, max)));
-								}
-							}
-					));
-					animationTimeline.setCycleCount(seconds * animGens);
-					animationTimeline.setOnFinished(new EventHandler<ActionEvent>() {
-						@Override
-						public void handle(ActionEvent actionEvent) {
-							// Set generated number
-							setGenNumber();
-						}
-					});
-					animationTimeline.play();
-				} else {
+				// Animation
+				genButton.setDisable(true);
+				int seconds = 2;
+				int animGens = 20;
+				Timeline animationTimeline = new Timeline(new KeyFrame(
+						Duration.millis(1000 / animGens),
+						actionEvent1 -> genNumber.setText(String.valueOf(genRandomNumber(min, max)))
+				));
+				animationTimeline.setCycleCount(seconds * animGens);
+				animationTimeline.setOnFinished(actionEvent12 -> {
 					// Set generated number
 					setGenNumber();
-				}
+				});
+				animationTimeline.play();
+			} else {
+				// Set generated number
+				setGenNumber();
 			}
 		});
 
@@ -297,21 +256,13 @@ public class RNG extends Application {
 
 		Label restartLabel = new Label("Restart");
 		restartLabel.setTextFill(Color.web("black"));
-		restartLabel.setOnMouseClicked(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent event) {
-				genStage.close();
-				settingMenu();
-			}
+		restartLabel.setOnMouseClicked(event -> {
+			genStage.close();
+			settingMenu();
 		});
 		Label aboutLabel = new Label("About");
 		aboutLabel.setTextFill(Color.web("black"));
-		aboutLabel.setOnMouseClicked(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent mouseEvent) {
-				popUp("About", "Created by Aloysius Lee", "https://github.com/cyanoise/JavaFX-RNG");
-			}
-		});
+		aboutLabel.setOnMouseClicked(mouseEvent -> popUp("About", "Created by Aloysius Lee", "https://github.com/cyanoise/JavaFX-RNG"));
 		Menu restartMenuButton = new Menu();
 		restartMenuButton.setGraphic(restartLabel);
 		Menu aboutMenuButton = new Menu();
