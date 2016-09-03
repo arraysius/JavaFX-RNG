@@ -36,7 +36,7 @@ public class RNG extends Application {
 	private static int min;
 	private static int max;
 	private static boolean repeat;
-	private static boolean animation;
+	private static boolean animSound;
 	private static ArrayList<Integer> historyNums;
 	private static ListView<HBox> historyList;
 	private static Label genNumber;
@@ -175,21 +175,21 @@ public class RNG extends Application {
 		});
 		GridPane.setConstraints(repeatLabel, 1, 2);
 
-		final CheckBox animCheckbox = new CheckBox();
-		GridPane.setConstraints(animCheckbox, 0, 3);
+		final CheckBox animSoundCheckbox = new CheckBox();
+		GridPane.setConstraints(animSoundCheckbox, 0, 3);
 
-		Label animLabel = new Label("Animation");
-		animLabel.setOnMouseClicked(new EventHandler<MouseEvent>() {
+		Label animSoundLabel = new Label("Animation & Sound");
+		animSoundLabel.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
-				animCheckbox.requestFocus();
-				animCheckbox.setSelected(!animCheckbox.isSelected());
+				animSoundCheckbox.requestFocus();
+				animSoundCheckbox.setSelected(!animSoundCheckbox.isSelected());
 			}
 		});
-		animCheckbox.setSelected(true);
-		GridPane.setConstraints(animLabel, 1, 3);
+		animSoundCheckbox.setSelected(true);
+		GridPane.setConstraints(animSoundLabel, 1, 3);
 
-		checkboxes.getChildren().addAll(repeatCheckbox, repeatLabel, animCheckbox, animLabel);
+		checkboxes.getChildren().addAll(repeatCheckbox, repeatLabel, animSoundCheckbox, animSoundLabel);
 
 		// Continue nextButton
 		Button nextButton = new Button("Next");
@@ -204,7 +204,7 @@ public class RNG extends Application {
 					min = Integer.parseInt(minText);
 					max = Integer.parseInt(maxText);
 					repeat = repeatCheckbox.isSelected();
-					animation = animCheckbox.isSelected();
+					animSound = animSoundCheckbox.isSelected();
 					settingsStage.close();
 					generatorWindow();
 				} else {
@@ -248,7 +248,7 @@ public class RNG extends Application {
 		genButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent actionEvent) {
-				if (animation) {
+				if (animSound) {
 					// Sound
 					Media sound = new Media(new File("ticking.mp3").toURI().toString());
 					MediaPlayer mediaPlayer = new MediaPlayer(sound);
