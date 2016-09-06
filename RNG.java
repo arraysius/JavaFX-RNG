@@ -218,9 +218,13 @@ public class RNG extends Application {
 		genButton.setOnAction(actionEvent -> {
 			if (animSound) {
 				// Sound
-				Media sound = new Media(getSoundEfect());
-				MediaPlayer mediaPlayer = new MediaPlayer(sound);
-				mediaPlayer.play();
+				try {
+					Media sound = new Media(getSoundEfect());
+					MediaPlayer mediaPlayer = new MediaPlayer(sound);
+					mediaPlayer.play();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 
 				// Animation
 				genButton.setDisable(true);
